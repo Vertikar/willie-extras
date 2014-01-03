@@ -7,13 +7,6 @@ import gnupg
 
 
 def configure(config):
-    """
-
-    | [url] | example | purpose |
-    | ---- | ------- | ------- |
-    | exclude | https?://git\.io/.* | A list of regular expressions for URLs for which the title should not be shown. |
-    | exclusion_char | ! | A character (or string) which, when immediately preceding a URL, will stop the URL's title from being shown. |
-    """
     if not config.has_section('gpg'):
         config.add_section('gpg')
 
@@ -27,8 +20,17 @@ def clearsign(bot, trigger):
 
     #download url
     url = trigger.group(2)
-    print url
-    resp = urllib2.urlopen(url)
+
+    if url[:4] is not "http":
+        bot.reply("URL protocol not supported, only http and https")
+        return
+
+    try:
+        resp = urllib2.urlopen(url)
+    except:
+        bot.reply("Wrong URL")
+        return
+
     file_read = resp.read(9999999)
 
     if bot.config.has_option('gpg', 'gpg_keys_path') and bot.config.has_option('gpg', 'gpg_key_id'):
@@ -40,7 +42,7 @@ def clearsign(bot, trigger):
             gpg_key_passphrase = None
     else:
         bot.reply("GPG not setup correctly")
-
+        return
     #gpg = gnupg.GPG(gnupghome=gpg_keys_path)
     gpg = gnupg.GPG()
     gpg.encoding = 'utf-8'
