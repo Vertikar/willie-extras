@@ -3,12 +3,14 @@ __author__ = 'sylvain'
 from willie.module import commands, example
 import urllib2
 import json
+import string
 
 @commands('cryptsy')
 @example('.cryptsy')
 def cryptsy(bot, trigger):
 
     curr = trigger.group(2)
+    curr.upper()
     if curr is None:
         curr="LTC"
 
